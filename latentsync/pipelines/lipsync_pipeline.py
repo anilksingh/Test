@@ -266,7 +266,8 @@ class LipsyncPipeline(DiffusionPipeline):
 
         if not faces:
             raise RuntimeError("No faces detected in any frames")
-
+        # Debugging information
+        print(f"Detected {len(faces)} faces in the video")
         return faces, boxes, affine_matrices
 
     def restore_video(self, faces: torch.Tensor, video_frames: np.ndarray, boxes: list, affine_matrices: list):
@@ -285,6 +286,8 @@ class LipsyncPipeline(DiffusionPipeline):
             face = (face / 2 + 0.5).clamp(0, 1)
             face = (face * 255).to(torch.uint8).cpu().numpy()
             out_frame = self.image_processor.restorer.restore_img(video_frames[index], face, affine_matrices[index])
+            # Debugging information
+            print(f"Frame {index}: Restored face at coordinates ({x1}, {y1}, {x2}, {y2})")
             out_frames.append(out_frame)
         return np.stack(out_frames, axis=0)
 
